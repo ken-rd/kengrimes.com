@@ -1,5 +1,6 @@
 import * as cookie from 'cookie';
 
+/** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
 	const jwt = cookies.jwt && Buffer.from(cookies.jwt, 'base64').toString('utf-8');
@@ -7,13 +8,12 @@ export async function handle({ event, resolve }) {
 	return await resolve(event);
 }
 
+/** @type {import('@sveltejs/kit').GetSession} */
 export function getSession({ locals }) {
 	return {
 		user: locals.user && {
-			username: locals.user.username,
-			email: locals.user.email,
-			image: locals.user.image,
-			bio: locals.user.bio
+			username: locals.user.displayName,
+			email: locals.user.email
 		}
 	};
 }
