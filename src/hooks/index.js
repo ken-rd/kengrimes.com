@@ -4,16 +4,13 @@ import * as cookie from 'cookie';
 export async function handle({ event, resolve }) {
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
 	const jwt = cookies.jwt && Buffer.from(cookies.jwt, 'base64').toString('utf-8');
-	event.locals.user = jwt ? JSON.parse(jwt) : null;
+	event.locals.jwt = jwt ? JSON.parse(jwt) : null;
 	return await resolve(event);
 }
 
 /** @type {import('@sveltejs/kit').GetSession} */
 export function getSession({ locals }) {
-	return {
-		user: locals.user && {
-			username: locals.user.displayName,
-			email: locals.user.email
-		}
-	};
+	return { 
+		email: locals.jwt?.user.email
+	}
 }

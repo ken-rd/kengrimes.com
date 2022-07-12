@@ -5,12 +5,20 @@
 // and what to do when importing types
 declare namespace App {
 	interface Locals {
-		user: {
-			displayName: string
-			email: string
+		jwt?: {
+			access_token: string
+			expires_at: number
+			expires_in: number
+			refresh_token: string
+			token_type: string
+			user: {
+				email: string
+			}
 		}
 	}
 	// interface Platform {}
-	// interface Session {}
+	interface Session {
+		email?: string
+	}
 	// interface Stuff {}
 }
