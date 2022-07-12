@@ -1,24 +1,25 @@
 /// <reference types="@sveltejs/kit" />
 
+import type { User } from "@supabase/supabase-js"
+
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 // and what to do when importing types
 declare namespace App {
 	interface Locals {
-		jwt?: {
-			access_token: string
-			expires_at: number
-			expires_in: number
-			refresh_token: string
-			token_type: string
-			user: {
-				email: string
-			}
-		}
+		jwt?: any
 	}
 	// interface Platform {}
 	interface Session {
-		email?: string
+		user: import('@supabase/supabase-js').User
+		profile: {
+			name: string
+			ach: {
+				id: string
+				account_no: string
+				routing_no: string
+			}
+		}
 	}
 	// interface Stuff {}
 }

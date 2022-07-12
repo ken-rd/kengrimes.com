@@ -5,25 +5,27 @@
 	let validEmail = true;
 	let loading = false;
 
-	const login = async () => {
+	supabase.auth.onAuthStateChange((_, authSession) => {
+		session.set({ email: authSession?.user?.email });
+	});
+
+	const signIn = async () => {
 		loading = true;
-		supabase.auth
-			.signIn({ email })
-			.then(({ session, error }) => {
-				error ? alert(error.message) : alert('Check your email for a login link!');
-			})
-			.catch(console.error)
-			.finally(() => (loading = false));
+        const response = await supabase.auth.signIn({email})
+
+        alert('Check your email for a login link!')
+        if (response.user) session.set({ user: response.user })
+
+        loading = false;
 	};
 </script>
 
-<h1>Auth</h1>
-<form on:submit|preventDefault={login}>
+<form on:submit|preventDefault={signIn}>
 	<input
 		type="email"
 		required
 		placeholder="Email"
 		bind:value={email}
 	/>
-	<button disabled={loading} type="submit">Log In</button>
+	<button disabled={loading} type="submit">Sign In</button>
 </form>

@@ -11,6 +11,6 @@ export async function handle({ event, resolve }) {
 /** @type {import('@sveltejs/kit').GetSession} */
 export function getSession({ locals }) {
 	return { 
-		email: locals.jwt?.user.email
+		user: locals.jwt?.user
 	}
 }
