@@ -28,9 +28,7 @@
 
 	/* convert array of datetime stamps to months */
 	function convertArrayToMonths(array) {
-		return array.map((date) => {
-			
-		});
+		return array.map((date) => {});
 	}
 
 	/**
@@ -40,14 +38,18 @@
 		console.log('converting asset to chart');
 		console.log(assetData);
 		const chartJSFormatted = {
-			labels: assetData.quotes.map((/** @type {{ date: any; }} */ quote) => new Date(quote.date).toLocaleDateString('en-US', {
-				month: 'short'
-			})),
+			labels: assetData.quotes.map((/** @type {{ date: any; }} */ quote) =>
+				new Date(quote.date).toLocaleDateString('en-US', {
+					month: 'short'
+				})
+			),
 			datasets: [
 				{
 					label: assetData.meta.symbol,
 					fill: false,
-					data: assetData.quotes.map((/** @type {{ close: any; }} */ quote) => quote.close)
+					data: assetData.quotes.map((/** @type {{ close: any; }} */ quote) => quote.close),
+					pointRadius: 1,
+					pointHoverRadius: 1
 				}
 			]
 		};
