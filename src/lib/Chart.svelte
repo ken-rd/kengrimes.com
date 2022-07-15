@@ -40,7 +40,9 @@
 		const chartJSFormatted = {
 			labels: assetData.quotes.map((/** @type {{ date: any; }} */ quote) =>
 				new Date(quote.date).toLocaleDateString('en-US', {
-					month: 'short'
+					month: 'numeric',
+					year: 'numeric',
+					hour12: true
 				})
 			),
 			datasets: [
@@ -48,8 +50,7 @@
 					label: assetData.meta.symbol,
 					fill: false,
 					data: assetData.quotes.map((/** @type {{ close: any; }} */ quote) => quote.close),
-					pointRadius: 1,
-					pointHoverRadius: 1
+					pointRadius: 1
 				}
 			]
 		};
