@@ -17,7 +17,6 @@ const emptySession = {
 export async function handle({ event, resolve }) {
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
 	if (cookies['sb-session']) event.locals.session = JSON.parse(cookies['sb-session']);
-	console.log("session parsed", event.locals.session)
 	return await resolve(event);
 }
 
