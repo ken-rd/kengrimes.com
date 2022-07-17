@@ -1,16 +1,27 @@
 import * as cookie from 'cookie';
 
+/** @type {App.Session} */
+const emptySession = {
+	access_token: '',
+	token_type: '',
+	user: {
+		id: '',
+		aud: '',
+		app_metadata: {},
+		user_metadata: {},
+		created_at: ''
+	}
+};
+
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
-	const jwt = cookies.jwt && Buffer.from(cookies.jwt, 'base64').toString('utf-8');
-	event.locals.jwt = jwt ? JSON.parse(jwt) : null;
+	if (cookies['sb-session']) event.locals.session = JSON.parse(cookies['sb-session']);
+	console.log("session parsed", event.locals.session)
 	return await resolve(event);
 }
 
 /** @type {import('@sveltejs/kit').GetSession} */
 export function getSession({ locals }) {
-	return { 
-		email: locals.jwt?.user.email
-	}
+	return locals.session || emptySession;
 }

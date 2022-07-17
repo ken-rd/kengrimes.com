@@ -1,24 +1,21 @@
 /// <reference types="@sveltejs/kit" />
+/// <reference types="@supabase/supabase-js" />
+type SBSession = import('@supabase/supabase-js').Session;
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 // and what to do when importing types
 declare namespace App {
 	interface Locals {
-		jwt?: {
-			access_token: string
-			expires_at: number
-			expires_in: number
-			refresh_token: string
-			token_type: string
-			user: {
-				email: string
-			}
-		}
+		session?: import('@supabase/supabase-js').Session;
 	}
 	// interface Platform {}
-	interface Session {
-		email?: string
+
+	interface Session extends SBSession {}
+
+	type SessionUpdateCallback = (session: Session) => void;
+	interface Stuff {
+		supabase?: import('@supabase/supabase-js').SupabaseClient;
+		onSessionUpdate: (callback: SessionUpdateCallback) => void;
 	}
-	// interface Stuff {}
 }
