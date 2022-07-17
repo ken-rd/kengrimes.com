@@ -6,7 +6,7 @@ import yahooFinance from 'yahoo-finance2'
  * @param {Object} request.params Params parsed out of request
  * @param {string} request.params.symbol The symbol to get chart data for
  */
-export async function get({ params }) {
+export async function GET({ params }) {
 
   /* TODO: Auth */
 

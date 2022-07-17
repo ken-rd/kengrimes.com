@@ -1,6 +1,8 @@
-<script>
+<script context="module">
 	import Line from 'svelte-chartjs/src/Line.svelte';
+</script>
 
+<script>
 	export let symbol = '';
 	let assetData = null;
 	/**
@@ -24,11 +26,6 @@
 			.catch((e) => {
 				console.log(e);
 			});
-	}
-
-	/* convert array of datetime stamps to months */
-	function convertArrayToMonths(array) {
-		return array.map((date) => {});
 	}
 
 	/**
