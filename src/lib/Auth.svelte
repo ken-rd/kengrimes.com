@@ -1,31 +1,20 @@
 <script>
-	import supabase from './supabase';
-	import { session } from '$app/stores';
+	import { session, page } from '$app/stores';
 	let email = '';
 	let validEmail = true;
 	let loading = false;
 
-	supabase.auth.onAuthStateChange((_, authSession) => {
-		session.set({ email: authSession?.user?.email });
-	});
-
 	const signIn = async () => {
-		loading = true;
-        const response = await supabase.auth.signIn({email})
-
-        alert('Check your email for a login link!')
-        if (response.user) session.set({ user: response.user })
-
-        loading = false;
+		if ($page.stuff.supabase) {
+			loading = true;
+			const response = await $page.stuff.supabase.auth.signIn({ email });
+			alert('Check your email for a login link!');
+			loading = false;
+		}
 	};
 </script>
 
 <form on:submit|preventDefault={signIn}>
-	<input
-		type="email"
-		required
-		placeholder="Email"
-		bind:value={email}
-	/>
-	<button disabled={loading} type="submit">Sign In</button>
-</form>
+	<input type="email" required placeholder="Email" bind:value={email} />
+	<input disabled={loading} type="submit" value="Sign In" />
+</form> 

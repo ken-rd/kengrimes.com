@@ -1,11 +1,9 @@
 <script>
-	import { session } from '$app/stores';
-	import supabase from './supabase';
-
-	const signOut = () => supabase.auth.signOut();
+	import { session, page } from '$app/stores';
+	const signOut = () => $page.stuff.supabase?.auth.signOut();
 </script>
 
-{#if $session.user}
+{#if $session.user?.email}
 	{$session.user.email}
 	<button on:click={signOut}>Sign Out</button>
 {/if}
