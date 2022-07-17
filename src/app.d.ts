@@ -13,9 +13,7 @@ declare namespace App {
 
 	interface Session extends SBSession {}
 
-	type SessionUpdateCallback = (session: Session) => void;
 	interface Stuff {
-		supabase?: import('@supabase/supabase-js').SupabaseClient;
-		onSessionUpdate: (callback: SessionUpdateCallback) => void;
+		supabase: import('@supabase/supabase-js').SupabaseClient;
 	}
 }

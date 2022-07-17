@@ -2,12 +2,26 @@ import { browser, server } from '$app/env';
 import { createClient } from '@supabase/supabase-js';
 import cookie from 'js-cookie';
 
+/** @type {App.Session} */
+export const emptySession = {
+	access_token: '',
+	token_type: '',
+	user: {
+		id: '',
+		aud: '',
+		app_metadata: {},
+		user_metadata: {},
+		created_at: ''
+	}
+};
+
 /** @type {import('@supabase/supabase-js').SupabaseClientOptions} */
 const supabaseOpts = {};
 
 /** @type {import('js-cookie').CookieAttributes} */
 const cookieOpts = {
-	sameSite: 'strict'
+	sameSite: 'strict',
+	secure: true
 };
 
 function restoreSession() {
@@ -27,46 +41,45 @@ function restoreSession() {
 				'supabase.auth.token',
 				`{"currentSession":${cookieSession},"expiresAt":${restoredSession.expires_at}}`
 			);
-		console.log('restored session', restoredSession);
 	}
 
-    return restoredSession
+	return restoredSession;
 }
 
-export const restoredSession = browser ? restoreSession() : null
+export const restoredSession = browser ? restoreSession() : null;
 
-/** @param {App.Session} session */
+/** Store a copy of the sb-session in a cookie, for SSR
+ * @param {import('@supabase/supabase-js').AuthChangeEvent} event
+ * @param {import('@supabase/supabase-js').Session | null} session
+ */
+function updateSessionCookies(event, session) {
+	if (event === 'SIGNED_OUT') cookie.remove('sb-session');
+	else cookie.set('sb-session', JSON.stringify(session), cookieOpts);
+};
+
+/** Bind the supabase session to a writable store
+ * @param {import('@supabase/supabase-js').SupabaseClient} supabase 
+ * @param {import('svelte/store').Writable<App.Session>} writable 
+ */
+export function bindSession(supabase, writable) {
+	supabase.auth.onAuthStateChange((event, session) => {
+		if (session) writable.set(session)
+		else writable.set(emptySession)
+		updateSessionCookies(event, session)
+	})
+}
+
+/** Create a supabase client with an auth listener
+ * @param {App.Session} session
+ */
 export function loadClient(session) {
 	const supabase = createClient(
 		import.meta.env.VITE_SUPABASE_URL,
 		import.meta.env.VITE_SUPABASE_ANON_KEY,
 		supabaseOpts
 	);
-	if (session.access_token !== '') supabase.auth.setAuth(session.access_token);
+	if (server || restoredSession) supabase.auth.setAuth(session.access_token);
+	supabase.auth.onAuthStateChange(updateSessionCookies)
 
-    /** @type {App.SessionUpdateCallback} */
-    let authCallback = _ => {};
-
-	if (browser) {
-
-		supabase.auth.onAuthStateChange(
-			/** Store a copy of the sb-session in a cookie, for SSR
-			 * @param {import('@supabase/supabase-js').AuthChangeEvent} event
-			 * @param {import('@supabase/supabase-js').Session | null} authSession
-			 */
-			(event, authSession) => {
-				console.log('auth state changed', event, authSession);
-				if (authSession) authCallback(authSession);
-				if (event === 'SIGNED_OUT') cookie.remove('sb-session');
-				else cookie.set('sb-session', JSON.stringify(authSession), cookieOpts);
-			}
-		);
-	}
-
-    /** @param {App.SessionUpdateCallback} callback */
-	function onSessionUpdate(callback) {
-        authCallback = callback        
-    }
-
-    return { supabase, onSessionUpdate };
+	return supabase;
 }
